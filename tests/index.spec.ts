@@ -30,8 +30,6 @@ describe('Orders', function () {
     })
     test('should return a total amount between 10 and 100 when order is retail', () => {
         const type: string = "RETAIL";
-        jest.requireActual("../src/utils")
-
         const order: Order = new Order(type);
 
         const totalAmount = order.getTotalAmount();
@@ -62,5 +60,11 @@ describe('Orders', function () {
         const order: Order = new Order(type, "123ABC456");
 
         expect(order.orderNumber).toEqual("123ABC456")
+    })
+    test('should display Market-Place: before order number for Market Place order', () => {
+        const type: string = "MARKET_PLACE";
+        const order: Order = new Order(type, "123ABC456");
+
+        expect(order.getOrderNumber()).toEqual("Market-Place:123ABC456")
     })
 });

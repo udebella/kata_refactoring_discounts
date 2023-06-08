@@ -9,6 +9,12 @@ export class Order {
         if (!orderNumber) this.orderNumber = "defaultOrderNumber"
         else this.orderNumber = orderNumber
     }
+    getOrderNumber (): string {
+        if (this.type === "MARKET_PLACE") {
+            return `Market-Place:${this.orderNumber}`
+        }
+        else return this.orderNumber
+    }
 
     getTotalAmount = (): number => {
         switch (this.type) {
