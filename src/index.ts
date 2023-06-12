@@ -2,7 +2,7 @@ import {getAmount, getAmountFromMarketPlace, getWebDiscount} from "./utils";
 
 export class Order {
     private readonly type: string;
-    orderNumber: string;
+    private readonly orderNumber: string;
 
     constructor(type: string, orderNumber?: string) {
         this.type = type
