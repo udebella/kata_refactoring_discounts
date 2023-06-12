@@ -28,6 +28,19 @@ describe('Orders', function () {
         const totalAmount = order.getTotalAmount();
         expect(totalAmount).toEqual(60)
     })
+
+    test('should add a -10 discount on web order when total amount is >= 70', () => {
+        const type: string = "WEB";
+        const order: Order = new Order(type);
+
+        const getAmountSpy = jest.spyOn(Utils, 'getAmount');
+        const getWebDiscountSpy = jest.spyOn(Utils, 'getWebDiscount');
+        getAmountSpy.mockImplementationOnce(() => 79);
+        getWebDiscountSpy.mockImplementationOnce(() => 9);
+
+        const totalAmount = order.getTotalAmount();
+        expect(totalAmount).toEqual(60)
+    })
     test('should return a total amount between 10 and 100 when order is retail', () => {
         const type: string = "RETAIL";
         const order: Order = new Order(type);

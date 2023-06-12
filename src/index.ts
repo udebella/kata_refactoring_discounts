@@ -19,10 +19,15 @@ export class Order {
     getTotalAmount = (): number => {
         switch (this.type) {
             case "WEB":
-                const amount: number = getAmount();
-                const discount: number = getWebDiscount();
-                if (amount - discount > 50) return amount - discount - 1
-                return amount - discount;
+                const totalAmount = getAmount() - getWebDiscount();
+                let bonusDiscount = 0;
+                if (totalAmount >= 70){
+                    bonusDiscount = 10
+                }
+                else if (totalAmount > 50) {
+                    bonusDiscount = 1
+                }
+                return totalAmount - bonusDiscount;
             case "RETAIL":
                 return getAmount();
             case "MARKET_PLACE":
