@@ -4,18 +4,27 @@ import * as Utils from "../src/utils";
 
 describe('Orders', function () {
 
-    describe('order WEB', () => {
-        test('should have default order number if it was not initialized', () => {
-            const order: Order = createWebOrder();
+    const ordersTypes = {
+        Web: createWebOrder,
+        Retail: createRetailOrder
+    };
 
-            expect(order.getOrderNumber()).toEqual("defaultOrderNumber")
-        })
-        test('should have an order number if it when well initialized', () => {
-            const order: Order = createWebOrder("123ABC456");
+    Object.entries(ordersTypes).forEach(([name, orderBuilder]) => {
+        describe(name, () => {
+            test('should have default order number if it was not initialized', () => {
+                const order: Order = orderBuilder();
 
-            expect(order.getOrderNumber()).toEqual("123ABC456")
-        })
+                expect(order.getOrderNumber()).toEqual("defaultOrderNumber")
+            })
+            test('should have an order number when well initialized', () => {
+                const order: Order = orderBuilder("123ABC456");
 
+                expect(order.getOrderNumber()).toEqual("123ABC456")
+            })
+        });
+    });
+
+    describe('Web', () => {
         test('should return amount - discount as total amount when order is web and total amount <= 50', () => {
             const order: Order = createWebOrder();
 
@@ -52,17 +61,7 @@ describe('Orders', function () {
         })
     });
 
-    describe('order RETAIL', () => {
-        test('should have default order number if it was not initialized', () => {
-            const order: Order = createRetailOrder();
-
-            expect(order.getOrderNumber()).toEqual("defaultOrderNumber")
-        })
-        test('should have an order number if it when well initialized', () => {
-            const order: Order = createRetailOrder("123ABC456");
-
-            expect(order.getOrderNumber()).toEqual("123ABC456")
-        })
+    describe('Retail', () => {
         test('should return a total amount between 10 and 100 when order is retail', () => {
             const order: Order = createRetailOrder();
 
@@ -72,14 +71,7 @@ describe('Orders', function () {
         })
     });
 
-    describe('order MARKET_PLACE', () => {
-        test('should return 100 as total amount when order is from a market place', () => {
-            const order: Order = createMarketOrder();
-
-            const totalAmount = order.getTotalAmount();
-            expect(totalAmount).toEqual(100)
-        })
-
+    describe('Market', () => {
         test('should have default order number if it was not initialized', () => {
             const order: Order = createMarketOrder();
 
@@ -89,6 +81,13 @@ describe('Orders', function () {
             const order: Order = createMarketOrder("123ABC456");
 
             expect(order.getOrderNumber()).toEqual("Market-Place:123ABC456")
+        })
+
+        test('should return 100 as total amount when order is from a market place', () => {
+            const order: Order = createMarketOrder();
+
+            const totalAmount = order.getTotalAmount();
+            expect(totalAmount).toEqual(100)
         })
     });
 });

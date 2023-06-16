@@ -4,8 +4,12 @@ export interface Order {
     getOrderNumber: () => string
     getTotalAmount: () => number
 }
-
-const compose = <T> (...fns: Function[]) => (value?: T) => fns.reduce((acc, next) => next(acc), value)
+function compose<T1, T2, T3>(
+    f : (x : T2) => T3,
+    g : (x?: T1) => T2
+): (x?: T1) => T3 {
+    return x => f(g(x));
+}
 
 const order = (orderNumber = 'defaultOrderNumber'): Order => ({
     getOrderNumber: () => orderNumber,
@@ -31,6 +35,6 @@ const computeBonusDiscount = (amount: number): number =>
     amount > 50     ? 1     :
                       0
 
-export const createMarketOrder = compose(order, market);
+export const createMarketOrder = compose(market, order);
 export const createRetailOrder = order;
-export const createWebOrder = compose(order, web)
+export const createWebOrder = compose(web, order)
