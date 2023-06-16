@@ -4,10 +4,9 @@ export class Order {
     private readonly type: string;
     private readonly orderNumber: string;
 
-    constructor(type: string, orderNumber?: string) {
+    constructor(type: string, orderNumber = 'defaultOrderNumber') {
         this.type = type
-        if (!orderNumber) this.orderNumber = "defaultOrderNumber"
-        else this.orderNumber = orderNumber
+        this.orderNumber = orderNumber
     }
     getOrderNumber (): string {
         if (this.type === "MARKET_PLACE") {
