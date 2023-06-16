@@ -1,38 +1,36 @@
 import {getAmount, getAmountFromMarketPlace, getWebDiscount} from "./utils";
 
-export class Order {
-    private readonly type: string;
-    private readonly orderNumber: string;
-
-    constructor(type: string, orderNumber = 'defaultOrderNumber') {
-        this.type = type
-        this.orderNumber = orderNumber
-    }
-    getOrderNumber (): string {
-        if (this.type === "MARKET_PLACE") {
-            return `Market-Place:${this.orderNumber}`
-        }
-        else return this.orderNumber
-    }
-
-    getTotalAmount = (): number => {
-        switch (this.type) {
-            case "WEB":
-                const totalAmount = getAmount() - getWebDiscount();
-                let bonusDiscount = 0;
-                if (totalAmount >= 70){
-                    bonusDiscount = 10
-                }
-                else if (totalAmount > 50) {
-                    bonusDiscount = 1
-                }
-                return totalAmount - bonusDiscount;
-            case "RETAIL":
-                return getAmount();
-            case "MARKET_PLACE":
-                return getAmountFromMarketPlace();
-        }
-        throw new Error("Should be unreachable");
-    };
+export interface Order {
+    getOrderNumber: () => string
+    getTotalAmount: () => number
 }
 
+const compose = <T> (...fns: Function[]) => (value?: T) => fns.reduce((acc, next) => next(acc), value)
+
+const order = (orderNumber = 'defaultOrderNumber'): Order => ({
+    getOrderNumber: () => orderNumber,
+    getTotalAmount: getAmount
+})
+
+const market = (order: Order): Order => ({
+    getOrderNumber: () => `Market-Place:${order.getOrderNumber()}`,
+    getTotalAmount: getAmountFromMarketPlace
+})
+
+const web = (order: Order): Order => ({
+    ...order,
+    getTotalAmount: () => {
+        const amountBeforeBonusDiscount = getAmount() - getWebDiscount();
+        const bonusDiscount = computeBonusDiscount(amountBeforeBonusDiscount);
+        return amountBeforeBonusDiscount - bonusDiscount;
+    }
+})
+
+const computeBonusDiscount = (amount: number): number =>
+    amount >= 70    ? 10    :
+    amount > 50     ? 1     :
+                      0
+
+export const createMarketOrder = compose(order, market);
+export const createRetailOrder = order;
+export const createWebOrder = compose(order, web)
